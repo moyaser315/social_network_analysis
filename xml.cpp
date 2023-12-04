@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <sstream>
 #include <regex>
+#include <queue>
 using namespace std;
 
 
@@ -16,7 +18,7 @@ string strip_line(const string &line) {
     return line.substr(first_non_space, last_non_space - first_non_space + 1);
 }
 
-class Node
+struct Node
 {
 public:
     string name;
@@ -37,7 +39,7 @@ class XML
 private:
     Node *root{nullptr};
 
-    string read_file(const string &file_path)
+    vector<string> read_file(const string &file_path)
     {
         // open file
         ifstream file(file_path);
@@ -57,21 +59,116 @@ private:
 
         txt = regex_replace(txt, regex(">(\\s*)"), ">\n");
         txt = regex_replace(txt, regex("(\\s*)</"), "\n</");
-        return txt;
+
+        istringstream txt_stream(txt);
+        vector<string> tokens;
+        while (getline(txt_stream, line)) {
+            tokens.push_back(line);
+        }
+        
+        return tokens;
     }
+
+    bool is_opening_tag(const string &token) {
+        return regex_match(token, regex("<[a-zA-Z]+>"));
+    }
+
+    bool is_tag(const string &token) {
+        return regex_match(token, regex("<[a-zA-Z]+>|</[a-zA-Z]+>"));
+    }
+
+    bool is_closing_tag(const string &token) {
+        return regex_match(token, regex("</[a-zA-Z]+>"));
+    }
+
+    bool is_text_node(const string &token) {
+        return regex_match(token, regex("[_a-zA-Z0-9.,?&\"'\\s]+"));
+    }
+
+    pair<Node *, int> create_node(const vector<string> &tokens, const int &token_idx) {
+        if (token_idx >= (int)tokens.size()) {
+            return make_pair(nullptr, -1);
+        }
+
+        string token = tokens[token_idx];
+
+        if (is_text_node(token)) {
+            Node *node {new Node{"TEXT", token}};
+            return make_pair(node, token_idx + 1);
+        }
+
+        if (is_opening_tag(token)) {
+            string node_name {token.substr(1, (int)token.size() - 2)};
+            Node *node {new Node{node_name}};
+
+            int next_token_idx {token_idx + 1};
+            while (is_opening_tag(tokens[next_token_idx]) || is_text_node(tokens[next_token_idx])) {
+                pair<Node *, int> res {create_node(tokens, next_token_idx)};
+                node->children.push_back(res.first);
+                next_token_idx = res.second;
+            }
+            
+            if (is_closing_tag(tokens[next_token_idx])) {
+                string closing_node {tokens[next_token_idx].substr(2, (int)tokens[next_token_idx].size() - 3) };
+                if (node_name == closing_node) {
+                    return make_pair(node, next_token_idx + 1);
+                } else {
+                    throw runtime_error("Parsing Error: Closing tag doesn't match.");
+                }
+            }
+
+        } else {
+            throw runtime_error("Runtime Error: Reached a closing tag that shouldn't be there");
+        }
+
+    }
+
+    
 
 public:
     XML(const string &file_path)
     {
-
+        vector<string> tokens {read_file(file_path)};
+        pair<Node*, int> res {create_node(tokens, 0)};
+        root = res.first;
     }
 
-    string read(const string &path) {
-        return read_file(path);
+    void print_by_level()
+    {
+        queue<Node *> nodes;
+        nodes.push(root);
+        int level{0};
+
+        while (!nodes.empty())
+        {
+            cout << "Level " << level << ": ";
+
+            int size{(int)nodes.size()};
+            for (int i = 0; i < size; i++)
+            {
+                Node *node{nodes.front()};
+                nodes.pop();
+
+                for (const auto n: node->children) {
+                    nodes.push(n);
+                }
+
+                cout << node->name;
+                if (node->value != "") {
+                    cout << ": " << node->value;
+                }
+
+                cout << endl;
+            }
+            level++;
+
+            cout << endl;
+        }
     }
 };
 
 int main()
 {
-    cout << XML("").read("./sample.xml") << endl;
+    XML xml{"./sample.xml"};
+    xml.print_by_level();
 }
