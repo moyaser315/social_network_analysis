@@ -6,20 +6,27 @@
 #include <queue>
 using namespace std;
 
-struct Node
+class XmlNode
 {
 public:
     string name;
-    string value;
-    vector<Node *> children;
 
-    Node(const string &name, const string &value = "") : name{name}, value{value}
+    XmlNode(const string &name) : name(name)
     {
         if (name == "")
         {
             throw runtime_error("Node must have a name.");
         }
     }
+    virtual string to_string(const bool &prettify = true, const int &pre_spaces = 0) = 0;
+};
+
+class XmlTag : public XmlNode
+{
+public:
+    string value;
+    vector<XmlNode *> children;
+    XmlTag(const string &name) : XmlNode(name) {}
 
     string to_string(const bool &prettify = true, const int &pre_spaces = 0)
     {
@@ -32,38 +39,54 @@ public:
             }
         }
 
-        if (name != "__TEXT__")
+        res += "<" + name + ">";
+        if (prettify)
         {
+            res += "\n";
+        }
 
-            res += "<" + name + ">";
-            if (prettify)
+        for (const auto child : children)
+        {
+            res += child->to_string(prettify, pre_spaces + 4);
+        }
+
+        if (prettify)
+        {
+            res += "\n";
+            for (int i = 0; i < pre_spaces; i++)
             {
-                res += "\n";
-            }
-
-            for (const auto child : children)
-            {
-                res += child->to_string(prettify, pre_spaces + 4);
-            }
-
-            if (prettify)
-            {
-                res += "\n";
-                for (int i = 0; i < pre_spaces; i++)
-                {
-                    res += " ";
-                }
-            }
-
-            res += "</" + name + ">";
-            if (prettify) {
-                res += "\n";
+                res += " ";
             }
         }
-        else
+
+        res += "</" + name + ">";
+        if (prettify)
         {
-            res += value;
+            res += "\n";
         }
+
+        return res;
+    }
+};
+
+class TextNode : public XmlNode
+{
+public:
+    string value;
+    TextNode(const string &value) : XmlNode("__TEXT__"), value{value} {}
+
+    string to_string(const bool &prettify = true, const int &pre_spaces = 0)
+    {
+        string res{""};
+        if (prettify)
+        {
+            for (int i = 0; i < pre_spaces; i++)
+            {
+                res += " ";
+            }
+        }
+
+        res += value;
 
         return res;
     }
@@ -138,22 +161,26 @@ private:
         return tokens;
     }
 
-    static void clear(Node *node)
+    static void clear(XmlNode *node)
     {
         if (!node)
         {
             return;
         }
 
-        for (const auto n : node->children)
+        XmlTag *tag{dynamic_cast<XmlTag *>(node)};
+        if (tag)
         {
-            clear(n);
+            for (const auto n : tag->children)
+            {
+                clear(n);
+            }
         }
 
         delete node;
     }
 
-    static pair<Node *, int> create_node(const vector<string> &tokens, const int &token_idx)
+    static pair<XmlNode *, int> create_node(const vector<string> &tokens, const int &token_idx)
     {
         if (token_idx >= (int)tokens.size())
         {
@@ -164,19 +191,19 @@ private:
 
         if (is_text_node(token))
         {
-            Node *node{new Node{"__TEXT__", token}};
+            TextNode *node{new TextNode{token}};
             return make_pair(node, token_idx + 1);
         }
 
         if (is_opening_tag(token))
         {
             string node_name{token.substr(1, (int)token.size() - 2)};
-            Node *node{new Node{node_name}};
+            XmlTag *node{new XmlTag{node_name}};
 
             int next_token_idx{token_idx + 1};
             while (is_opening_tag(tokens[next_token_idx]) || is_text_node(tokens[next_token_idx]))
             {
-                pair<Node *, int> res;
+                pair<XmlNode *, int> res;
                 try
                 {
                     res = create_node(tokens, next_token_idx);
@@ -217,7 +244,7 @@ private:
     }
 
 public:
-    static Node *parse(const string &file_path)
+    static XmlTag *parse(const string &file_path)
     {
         if (file_path == "")
         {
@@ -226,26 +253,36 @@ public:
 
         vector<string> tokens{read_file(file_path)};
 
-        pair<Node *, int> res{create_node(tokens, 0)};
-        return res.first;
+        pair<XmlNode *, int> res{create_node(tokens, 0)};
+        XmlTag *tag{dynamic_cast<XmlTag *>(res.first)};
+        if (!tag)
+        {
+            throw runtime_error("Parsing Error: The root node isn't an XML tag");
+        }
+
+        return tag;
     }
 };
 
 class XmlTree
 {
 private:
-    Node *root{nullptr};
+    XmlTag *root{nullptr};
 
-    void clear(Node *node)
+    void clear(XmlNode *node)
     {
         if (!node)
         {
             return;
         }
 
-        for (const auto n : node->children)
+        XmlTag *tag{dynamic_cast<XmlTag *>(node)};
+        if (tag)
         {
-            clear(n);
+            for (const auto n : tag->children)
+            {
+                clear(n);
+            }
         }
 
         delete node;
@@ -262,7 +299,8 @@ public:
         clear(root);
     }
 
-    string to_string(const bool &prettify = true) {
+    string to_string(const bool &prettify = true)
+    {
         return root->to_string(prettify);
     }
 };
