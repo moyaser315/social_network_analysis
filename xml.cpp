@@ -108,7 +108,7 @@ private:
     static vector<string> read_file(const string &xml_file_path)
     {
         // open file
-        ifstream file(xml_file_path);
+        ifstream file;file.open(xml_file_path);
         if (!file.is_open())
         { // if error opening file
             throw runtime_error("FileSystem Error: Unable to read the file");
@@ -269,6 +269,6 @@ public:
 
 int main()
 {
-    XmlTree xml{"./sample.xml"};
+    XmlTree xml{".\\projprojsample.xml"};
     cout << xml.to_string(false) << endl;
 }
