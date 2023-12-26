@@ -2,6 +2,8 @@
 #define TREE_H
 #include<iostream>
 #include<vector>
+#include<fstream>
+#include<queue>
 using namespace std;
 
 template<typename T>
@@ -14,6 +16,7 @@ class tree_mul{
         void insert(tree_mul<T>* child);
         void insert(T data);
         T get_data();
+        void level(string fpath); // testing if the tree is correct
 
 
 };
