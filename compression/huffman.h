@@ -41,9 +41,17 @@ int bin_conv(string s);
 void construct_key();
 void encode(string fpath);
 
+// decode
+string dec_Bin_conv(int dec);
+void rebuild_codes(char letter, string huffman_code);
+void decode_key(string fpath);
+
 // steps
 void compress(string fpath);
+void decompress(string fpath_in);
 
 // output file
 void write_file(string fpath,bool f);
+
+
 #endif

@@ -2,6 +2,7 @@
 
 /// @brief internal function to get the frequency of each letter
 /// @param fpath 
+/// time : o(n) , space : o(n)
 void arrange_freq(string fpath)
 {
 
@@ -43,6 +44,7 @@ huffman coding works as following :
 */
 
 /// @brief building huffman tree
+/// time complexity : o(n) , space complexity : o(n)
 void build()
 {
     Node *l, *r;
@@ -66,6 +68,7 @@ void build()
 /// @brief generating binary code for each charachter
 /// @param cur the node we are at 
 /// @param code the code to be assigned to it
+//time complexity : o(n) , space complexity : o(1)
 void generate_codes(Node *cur, string code)
 {
     if (!cur)
@@ -76,14 +79,15 @@ void generate_codes(Node *cur, string code)
         cur->code = code;
         return;
     }
-    generate_codes(cur->left, "0"+code );
-    generate_codes(cur->right, "1"+code);
+    generate_codes(cur->left, code + "0");
+    generate_codes(cur->right, code + "1");
 }
 
 
 /// @brief this to convert biary represented as string to value so that it would be smaller in size
 /// @param s the binary code
 /// @return an integer representing it
+/// time complexity : o(1) , space complexity : o(1)
 int bin_conv(string s)
 {
 
@@ -95,6 +99,7 @@ int bin_conv(string s)
 // this key is for decoding it would be apppended in the begining
 
 /// @brief generating key for decoding, it would be apppended in the begining
+/// time complexity : o(n) , space complexity : o(n)
 void construct_key()
 {
     string temp = "";
@@ -125,6 +130,7 @@ void construct_key()
 
 /// @brief compress the file
 /// @param fpath 
+/// time complexity : o(n) , space complexity : o(n)
 void encode(string fpath)
 {
     construct_key();
@@ -157,7 +163,8 @@ void encode(string fpath)
 
 
 /// @brief organizing the compressin process can be discarded by calling the functions in order
-/// @param fpath 
+/// @param fpath
+/// time complexity : o(1) , space complexity : o(1) 
 void compress(string fpath)
 {
     arrange_freq(fpath);
@@ -166,7 +173,6 @@ void compress(string fpath)
     generate_codes(st, "");
     encode(fpath);
 }
-
 
 /**************************************decompression**************************************************/
 
@@ -226,6 +232,8 @@ void decode_key(string fpath)
     char tree_size;
     enc_file.read(reinterpret_cast<char *>(&tree_size), 1); // read 1 byte as it's the size as explained in encoding
 
+    // setting the st
+    st = new Node(0);
     // each tree node contain the ascii letter = 1 byte
     // + huffman code encoded in 128 bit (to have all letter combinations as explained above)
     // it took an integar every 8 bits
@@ -296,11 +304,11 @@ void decompress(string fpath_in)
 
     Node *cur = st;
     string huffman_code;
-    for (int i = 0; i < to_dec.size(); i++)
+    for (int i = 0; i < to_dec.size()-1; i++)
     {
         // getting huffman code
         huffman_code = dec_Bin_conv(to_dec[i]);
-        if (i == (to_dec.size() - 1))
+        if (i == (to_dec.size() - 2))
         {
             huffman_code = huffman_code.substr(0, 8 - trail_zero);
         }
@@ -334,10 +342,10 @@ void decompress(string fpath_in)
     enc_file.close();
 }
 
-/*******************general functions********************************/
 /// @brief for writing the file
 /// @param fpath the path to output to
 /// @param f outputting : (1: decompressed) , (0:compressed)
+/// time complexity : o(1) , space complexity : o(1)
 void write_file(string fpath,bool f)
 {
     fstream file;
