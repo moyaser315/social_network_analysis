@@ -36,4 +36,14 @@ void arrange_freq(string fpath);
 void build();
 void generate_codes(Node *cur, string code);
 
+// encode
+int bin_conv(string s);
+void construct_key();
+void encode(string fpath);
+
+// steps
+void compress(string fpath);
+
+// output file
+void write_file(string fpath,bool f);
 #endif
