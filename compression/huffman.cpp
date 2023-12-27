@@ -167,6 +167,173 @@ void compress(string fpath)
     encode(fpath);
 }
 
+
+/**************************************decompression**************************************************/
+
+/// @brief takes the letter takin from the file and turn it to binary
+/// @param dec the number coming from the binary file
+/// @return the binary value as string
+/// time complexity : o(1) , space complexity : o(1)
+string dec_Bin_conv(int dec)
+{
+    string res = "";
+    for (int i = 7; i > -1; i--)
+    {
+        // using bitmasks to get the binary value starting from MSB
+        if ((dec >> i) & 1)
+            res += '1';
+        else
+            res += '0';
+    }
+    return res;
+}
+
+/// @brief takes the charachter and it's code than reconstruct the huffman tree as 0 to left 1 to right
+/// @param letter the letter that have this code
+/// @param huffman_code the code extracted to decipher
+/// time complexity : o(log(n)) , space complexity : o(log(n))
+void rebuild_codes(char letter, string huffman_code)
+{
+    // we will start at the root as it's the MSB
+    Node *cur = st;
+    for (int i = 0; i < huffman_code.size(); i++)
+    {
+        if (huffman_code[i] == '0')
+        {
+            if (!cur->left)
+                cur->left = new Node(0);
+            cur = cur->left;
+        }
+        else
+        {
+            if (!cur->right)
+                cur->right = new Node(0);
+            cur = cur->right;
+        }
+    }
+    // after finishing the traversing and arriving at the node we set it's data to the letter
+    cur->data = letter;
+}
+
+/// @brief decoding the key that was ued to encode
+/// @param fpath the path of the file
+/// time complexity : o(n) , space complexity : o(1)
+void decode_key(string fpath)
+{
+    fstream enc_file(fpath, ios::in | ios::binary); // this will treat the file as binary
+                                                    // as file will be read in binary and we want to take the input as charachters as we encoded
+                                                    // we will use (reinterpret_cast) which is a way to cast the return var from function to the type we need
+    char tree_size;
+    enc_file.read(reinterpret_cast<char *>(&tree_size), 1); // read 1 byte as it's the size as explained in encoding
+
+    // each tree node contain the ascii letter = 1 byte
+    // + huffman code encoded in 128 bit (to have all letter combinations as explained above)
+    // it took an integar every 8 bits
+    // 128 / 8 = 16 byte
+    while (tree_size--)
+    {
+        char c; // the char
+        enc_file.read(&c, 1);
+
+        char code_int[16]; // the binary code of huffman
+        enc_file.read(reinterpret_cast<char *>(code_int), 16);
+
+        string huffman_code = "";
+        for (int i = 0; i < 16; i++)
+        {
+            huffman_code += dec_Bin_conv(code_int[i]);
+        }
+
+        // Removing 0s by ignoring first and seperating 1 as stated above
+        int i = 0;
+        while (huffman_code[i] == '0')
+        {
+            i++;
+        }
+        huffman_code = huffman_code.substr(i + 1);
+
+        rebuild_codes(c, huffman_code);
+    }
+    enc_file.close();
+}
+
+
+/// @brief decompress the file using the key after building the tree
+/// @param fpath_in the file to decompress
+/// @param fpath_out the file to output
+/// time complexity : o(n) , space complexity : o(n)
+void decompress(string fpath_in)
+{
+    fstream enc_file(fpath_in, ios::in | ios::binary);
+
+
+    decode_key(fpath_in);
+
+    char tree_size;
+    enc_file.read(reinterpret_cast<char *>(&tree_size), 1);
+
+    // the key was (1 char for size + size * (char for letter +16 char for huffman))
+    // we start after 17 *size +1 char
+    // we might have trailing 0s to ignore
+    // for getting the number of trailing 0s we will ste the pointer to the end of file with offset -1
+    enc_file.seekg(-1, ios::end);
+    char trail_zero;
+    enc_file.read(reinterpret_cast<char *>(&trail_zero), 1);
+
+    // now setting poiter to start after key and parse the file
+    enc_file.seekg(1 + 17 * tree_size, ios::beg);
+
+    string to_dec = "";
+    char c;
+
+    enc_file.read(reinterpret_cast<char *>(&c), 1);
+
+    while (!enc_file.eof())
+    {
+        to_dec += c;
+        enc_file.read(reinterpret_cast<char *>(&c), 1);
+    }
+
+    Node *cur = st;
+    string huffman_code;
+    for (int i = 0; i < to_dec.size(); i++)
+    {
+        // getting huffman code
+        huffman_code = dec_Bin_conv(to_dec[i]);
+        if (i == (to_dec.size() - 1))
+        {
+            huffman_code = huffman_code.substr(0, 8 - trail_zero);
+        }
+
+        // get data from tree
+
+        for (int j = 0; j < huffman_code.size(); j++)
+        {
+            if (!cur)
+            {
+                cur = st;
+                break;
+            }
+
+            if (huffman_code[j] == '0')
+            {
+                cur = cur->left;
+            }
+            else
+            {
+                cur = cur->right;
+            }
+
+            if (!cur->left && !cur->right)
+            {
+                decoded_string += (cur->data);
+                cur = st;
+            }
+        }
+    }
+    enc_file.close();
+}
+
 /*******************general functions********************************/
 /// @brief for writing the file
 /// @param fpath the path to output to
