@@ -1,23 +1,25 @@
 #ifndef PARSE_H
 #define PARSE_H
-#include <iostream>
-#include "../data_structres/tree.h"
-#include <regex>
+
 #include <fstream>
+#include <iostream>
+#include <regex>
+#include <string>
 
-using namespace std;
+#include "../xml_tree/tree.h"
 
-string strip_line(const string &line);
-string toline(string fpath, string &unmini, string &sp);
+std::string strip_line(const std::string &line);
+std::string toline(std::string fpath, std::string &unmini, std::string &sp);
 
-string get_tag(string line, int &st, bool &f);
-string get_value(string line, int &st);
+std::string get_tag(std::string line, int &st, bool &f);
+std::string get_value(std::string line, int &st);
 
-void build_tree(string &xml, tree_mul *&tag, int &st);
-void missing(string tagname, bool f);
+void build_tree(std::string &xml, tree_mul *&tag, int &st);
+void missing(std::string tagname, bool f);
 
-string ids[] = {"users", "user", "topics", "topic", "posts", "post", "name", "id", "followers", "follower", "body"};
-int freq[11] = {0};
-int errors;
+extern std::string IDs[];
+extern int freq[11];
+
+extern int errors;
 
 #endif
