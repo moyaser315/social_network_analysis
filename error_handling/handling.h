@@ -6,7 +6,7 @@
 using namespace std;
 
 void detect(string &xml);
-
+int get_freq(std::string s);
 
 stack<string> tags;
 stack<string> err;

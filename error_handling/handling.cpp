@@ -50,14 +50,32 @@ void detect(string &xml)
 
                     else
                     {
-                        // see if closing or opening is missing or is it mismatch
-
-                        cout << "closing tag mismatch for : " << tags.top() << "\n";
-                        cout << close << "   " << tags.top() << "\n";
-                        err.push(tags.top());
-                        tags.pop();
-                        cout << close << "   " << tags.top() << "\n";
-                        positions.push_back(st);
+                        // see if closing or opening is missing or is it
+                        // mismatch
+                        int temp = get_freq(close);
+                        if (freq[temp] > 0) {
+                            cout << "entered fre < 0 missing closing tag for : "
+                                 << tags.top() << "\n";
+                            cout << "will be fixed immeditly for file "
+                                    "consictincy\n";
+                            xml = xml.substr(0, i) + "</" + tags.top() + '>' +
+                                  xml.substr(i);
+                            cout << "\n\n" << xml.substr(st - 5, 15) << "\n\n";
+                            freq[temp]--;
+                            tags.pop();
+                        } else if (freq[temp] < 0) {
+                            cout << " missing opening tag for : " << close
+                                 << "\n";
+                            cout << "will be fixed immeditly for file "
+                                    "consictincy\n";
+                            xml = xml.substr(0, st - 1) + '<' + close + '>' +
+                                  xml.substr(st - 1);
+                            cout << "\n\n" << xml.substr(st - 20, 40) << "\n\n";
+                            tags.push(close);
+                            freq[temp]++;
+                        } else {
+                            //TODO waiting mismatch function
+                        }
                     }
                 }
             }
@@ -92,4 +110,15 @@ void detect(string &xml)
             continue;
     }
     bool e = 0;
+}
+
+
+/// @brief gets the position of the string in the frequency array
+/// @param s the tag we need to know its frequency
+/// @return the index to know the frequency
+int get_freq(string s) {
+    for (int i = 0; i < 11; i++) {
+        if (s == IDs[i])
+            return i;
+    }
 }
