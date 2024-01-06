@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1301</width>
+    <height>747</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>XML Parser</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QScrollArea" name="scrollArea">
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="scrollAreaWidgetContents">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>1281</width>
+         <height>644</height>
+        </rect>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout"/>
+      </widget>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1301</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionopen"/>
+    <addaction name="actionsave"/>
+    <addaction name="actionexit"/>
+   </widget>
+   <addaction name="menuFile"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <widget class="QToolBar" name="toolBar">
+   <property name="windowTitle">
+    <string>toolBar</string>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionopen"/>
+   <addaction name="actiondecompress"/>
+   <addaction name="actiondetect_errors"/>
+   <addaction name="actioncorrect_errors"/>
+   <addaction name="actionprettify"/>
+   <addaction name="actionminify"/>
+   <addaction name="actionconvert_to_json"/>
+   <addaction name="actioncompress"/>
+   <addaction name="actionanalyze_network"/>
+   <addaction name="actionsearch_posts"/>
+   <addaction name="actionundo"/>
+   <addaction name="actionredo"/>
+  </widget>
+  <action name="actionopen">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/share.png</normaloff>:/images/images/share.png</iconset>
+   </property>
+   <property name="text">
+    <string>open</string>
+   </property>
+  </action>
+  <action name="actionexit">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/power-off.png</normaloff>:/images/images/power-off.png</iconset>
+   </property>
+   <property name="text">
+    <string>exit</string>
+   </property>
+  </action>
+  <action name="actiondetect_errors">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/loupe.png</normaloff>:/images/images/loupe.png</iconset>
+   </property>
+   <property name="text">
+    <string>detect errors</string>
+   </property>
+  </action>
+  <action name="actioncorrect_errors">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/checked.png</normaloff>:/images/images/checked.png</iconset>
+   </property>
+   <property name="text">
+    <string>correct errors</string>
+   </property>
+  </action>
+  <action name="actionconvert_to_json">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/bracket-curly.png</normaloff>:/images/images/bracket-curly.png</iconset>
+   </property>
+   <property name="text">
+    <string>convert to json</string>
+   </property>
+  </action>
+  <action name="actionsave">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/diskette.png</normaloff>:/images/images/diskette.png</iconset>
+   </property>
+   <property name="text">
+    <string>save</string>
+   </property>
+  </action>
+  <action name="actionundo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/undo.png</normaloff>:/images/images/undo.png</iconset>
+   </property>
+   <property name="text">
+    <string>undo</string>
+   </property>
+  </action>
+  <action name="actionredo">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/forward.png</normaloff>:/images/images/forward.png</iconset>
+   </property>
+   <property name="text">
+    <string>redo</string>
+   </property>
+  </action>
+  <action name="actioncompress">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/zip.png</normaloff>:/images/images/zip.png</iconset>
+   </property>
+   <property name="text">
+    <string>compress</string>
+   </property>
+  </action>
+  <action name="actiondecompress">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/format.png</normaloff>:/images/images/format.png</iconset>
+   </property>
+   <property name="text">
+    <string>decompress</string>
+   </property>
+  </action>
+  <action name="actionminify">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/arrow.png</normaloff>:/images/images/arrow.png</iconset>
+   </property>
+   <property name="text">
+    <string>minify</string>
+   </property>
+  </action>
+  <action name="actionanalyze_network">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/networking.png</normaloff>:/images/images/networking.png</iconset>
+   </property>
+   <property name="text">
+    <string>analyze network</string>
+   </property>
+  </action>
+  <action name="actionsearch_posts">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/preview.png</normaloff>:/images/images/preview.png</iconset>
+   </property>
+   <property name="text">
+    <string>search for posts</string>
+   </property>
+  </action>
+  <action name="actionprettify">
+   <property name="icon">
+    <iconset resource="resources.qrc">
+     <normaloff>:/images/images/stars.png</normaloff>:/images/images/stars.png</iconset>
+   </property>
+   <property name="text">
+    <string>prettify</string>
+   </property>
+  </action>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

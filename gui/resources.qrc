@@ -1,0 +1,20 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>images/power-off.png</file>
+        <file>images/share.png</file>
+        <file>images/bracket-curly.png</file>
+        <file>images/checked.png</file>
+        <file>images/loupe.png</file>
+        <file>images/diskette.png</file>
+        <file>images/forward.png</file>
+        <file>images/undo.png</file>
+        <file>images/format.png</file>
+        <file>images/zip.png</file>
+        <file>images/arrow.png</file>
+        <file>images/networking.png</file>
+        <file>images/mutual-friends.png</file>
+        <file>images/suggest.png</file>
+        <file>images/preview.png</file>
+        <file>images/stars.png</file>
+    </qresource>
+</RCC>
