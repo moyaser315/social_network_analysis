@@ -121,12 +121,12 @@ void detect(string &xml)
         if (freq[i] < 0)
         {
             e = 1;
-            cout << "there was a missing opening tag for : " << ids[i] << "\n";
+            cout << "there was a missing opening tag for : " << IDs[i] << "\n";
         }
         if (freq[i] > 0)
         {
             e = 1;
-            cout << "there was a missing closing tag for : " << ids[i] << "\n";
+            cout << "there was a missing closing tag for : " << IDs[i] << "\n";
         }
     }
     if (e)
