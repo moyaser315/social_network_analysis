@@ -359,3 +359,7 @@ void write_file(string fpath,bool f)
 
     file.close();
 }
+
+string get_decoded_string() {
+    return decoded_string;
+}

@@ -50,5 +50,8 @@ void decompress(string fpath_in);
 // output file
 void write_file(string fpath,bool f);
 
+// helpers
+string get_decoded_string();
+
 
 #endif
