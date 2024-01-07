@@ -159,13 +159,13 @@ void MainWindow::on_actioncorrect_errors_triggered()    // on trigerring correct
 void MainWindow::on_actionsave_triggered()  // on trigerring save
 {
     QLabel *label = static_cast<QLabel *>(ui->scrollArea->widget());
-    save(this, file_path, label->text());
+    save(this, this->file_path, label->text());
 }
 
 
 void MainWindow::on_actionconvert_to_json_triggered()   // on trigerring convert to json
 {
-    json_window = new JsonWindow(this, QString::fromStdString(XmlToJson::to_json(root)), file_path);
+    json_window = new JsonWindow(this, QString::fromStdString(XmlToJson::to_json(root)), this->file_path);
     json_window->show();
 }
 
@@ -263,7 +263,7 @@ void MainWindow::on_actionsearch_posts_triggered()
         return;
     }
 
-    vector<string> matching_posts {search_by_word_or_topic(root, userInput.toStdString())};
+    vector<string> matching_posts {search_by_word_or_topic(root, userInput.toUtf8().constData())};
     if (matching_posts.empty()) {
         QMessageBox::information(this, "Posts", "No Posts Found!");
         return;
