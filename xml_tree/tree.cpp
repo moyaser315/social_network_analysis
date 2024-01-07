@@ -147,3 +147,6 @@ string tree_mul::to_string(const bool &prettify, const int &pre_tabs)
     return res;
 }
 
+vector<tree_mul *> tree_mul::get_children() {
+    return this->children;
+}
