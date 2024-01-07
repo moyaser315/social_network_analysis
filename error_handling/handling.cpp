@@ -8,77 +8,73 @@ vector<int> positions;
 
 /// @brief detects errors and correct missing and closing tags
 /// @param xml the string to parse for error detection
-void detect(string &xml) {
+void detect(string &xml)
+{
     string op, close;
     bool f = 0;
-    for (int i = 0; i < xml.size(); i++) {
-        if (xml[i] == '<') {
+    for (int i = 0; i < xml.size(); i++)
+    {
+        if (xml[i] == '<')
+        {
             // if f is raised it's a closing after a value
-            if (f) {
-                if (xml[i + 1] != '/') {
+            if (f)
+            {
+                if (xml[i + 1] != '/')
+                {
                     int temp = get_freq(tags.top());
                     if (freq[temp] > 0)
                         freq[temp]--;
                     cout << "missing closing tag for : " << tags.top() << "\n";
                     cout << "will be fixed immeditly for file consictincy\n";
-                    xml = xml.substr(0, i) + "</" + tags.top() + '>' +
-                          xml.substr(i);
+                    xml = xml.substr(0, i) + "</" + tags.top() + '>' + xml.substr(i);
 
                     i += tags.top().size() + 3;
                     tags.pop();
                 }
                 f = 0;
             }
-            // see if it's closing
-            if (xml[i + 1] == '/') {
+            // see if it's closing 
+            if (xml[i + 1] == '/')
+            {
                 i++;
                 int st = i;
-                while (xml[++i] != '>') {
+                while (xml[++i] != '>')
+                {
                     close += xml[i];
                 }
                 i--;
-                // if the stack is empty there are no opening tags and that
-                // means there was a missing opening tag
-                if (tags.empty()) {
+                // if the stack is empty there are no opening tags and that means there was a missing opening tag
+                if (tags.empty())
+                {
                     cout << "missing opening tag for : " << close << "\n";
                     cout << "will be fixed immeditly for file consictincy\n";
-                    xml = xml.substr(0, st - 1) + '<' + close + '>' +
-                          xml.substr(st - 1);
+                    xml = xml.substr(0, st - 1) + '<' + close + '>' + xml.substr(st - 1);
                 }
 
-                else {
+                else
+                {
                     // if closing == opening dismiss
                     if (tags.top() == close)
                         tags.pop();
 
-                    else {
-                        // see if closing or opening is missing or is it
-                        // mismatch
+                    else
+                    {
+                        // see if closing or opening is missing or is it mismatch
                         int temp = get_freq(close);
-                        if (freq[temp] > 0) {
-                            cout << "entered fre < 0 missing closing tag for : "
-                                 << tags.top() << "\n";
-                            cout << "will be fixed immeditly for file "
-                                    "consictincy\n";
-                            xml = xml.substr(0, i) + "</" + tags.top() + '>' +
-                                  xml.substr(i);
-                            cout << "\n\n" << xml.substr(st - 5, 15) << "\n\n";
-                            freq[temp]--;
-                            tags.pop();
-                        } else if (freq[temp] < 0) {
-                            cout << " missing opening tag for : " << close
-                                 << "\n";
-                            cout << "will be fixed immeditly for file "
-                                    "consictincy\n";
-                            xml = xml.substr(0, st - 1) + '<' + close + '>' +
-                                  xml.substr(st - 1);
-                            cout << "\n\n" << xml.substr(st - 20, 40) << "\n\n";
+                        if (freq[temp] < 0)
+                        {
+                            cout << " missing opening tag for : " << close << "\n";
+                            cout << "will be fixed immeditly for file consictincy\n";
+                            xml = xml.substr(0, st - 1) + '<' + close + '>' + xml.substr(st - 1);
+                            cout << "\n\n"
+                                 << xml.substr(st - 20, 40) << "\n\n";
                             tags.push(close);
                             freq[temp]++;
-                        } else {
+                        }
+                        else
+                        {
                             cout << freq[temp] << "  ";
-                            cout << "closing tag mismatch for : " << tags.top()
-                                 << "\n";
+                            cout << "closing tag mismatch for : " << tags.top() << "\n";
                             cout << close << "   " << tags.top() << "\n";
                             err.push(tags.top());
                             tags.pop();
@@ -87,9 +83,12 @@ void detect(string &xml) {
                         }
                     }
                 }
-            } else {
-                // get the opening to push to the stack
-                while (xml[++i] != '>') {
+            }
+            else
+            {
+                //get the opening to push to the stack
+                while (xml[++i] != '>')
+                {
                     op += xml[i];
                 }
                 tags.push(op);
@@ -100,32 +99,38 @@ void detect(string &xml) {
             f = 0;
             close = "";
         }
-        // if it's text ignore but raise a flag that it needs closing
-        else if (xml[i] == '>') {
-            if (xml[i + 1] == '<') {
+        //if it's text ignore but raise a flag that it needs closing
+        else if (xml[i] == '>')
+        {
+            if (xml[i + 1] == '<')
+            {
                 f = 0;
-            } else {
+            }
+            else
+            {
                 f = 1;
             }
-        } else
+        }
+        else
             continue;
     }
     bool e = 0;
-    // output if there are still missing tags we couldn't handle and give a
-    // warning that may have caused mismatch
-    for (int i = 0; i < 11; i++) {
-        if (freq[i] < 0) {
+    // output if there are still missing tags we couldn't handle and give a warning that may have caused mismatch
+    for (int i = 0; i < 11; i++)
+    {
+        if (freq[i] < 0)
+        {
             e = 1;
-            cout << "there was a missing opening tag for : " << IDs[i] << "\n";
+            cout << "there was a missing opening tag for : " << ids[i] << "\n";
         }
-        if (freq[i] > 0) {
+        if (freq[i] > 0)
+        {
             e = 1;
-            cout << "there was a missing closing tag for : " << IDs[i] << "\n";
+            cout << "there was a missing closing tag for : " << ids[i] << "\n";
         }
     }
     if (e)
-        cout << "IMPORTANT NOTE !!!\nmissing tags may have caused mismatch "
-                "errors\n";
+        cout << "IMPORTANT NOTE !!!\nmissing tags may have caused mismatch errors\n";
 }
 
 /// @brief gets the position of the string in the frequency array
@@ -167,6 +172,10 @@ void correct(string &xml) {
             cout << xml[i];
         cout << endl << s;
         cout << "\n************\n\n\n";
+    }
+    while(!tags.empty()){
+        xml+="</"+tags.top()+'>';
+        tags.pop();
     }
 }
 
