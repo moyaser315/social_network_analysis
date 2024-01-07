@@ -80,12 +80,12 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_actionopen_triggered()
 {
-    file_path = QFileDialog::getOpenFileName(this, "Select XML file", QDir::homePath(), "xml file (*.xml)");
-    if (file_path.isEmpty()) {
+    this->file_path = QFileDialog::getOpenFileName(this, "Select XML file", QDir::homePath(), "xml file (*.xml)");
+    if (this->file_path.isEmpty()) {
         return;
     }
 
-    QFile file(file_path);
+    QFile file(this->file_path);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
         QMessageBox::warning(this, "Error!!", "Can't Open File!!");
         return;
@@ -95,7 +95,7 @@ void MainWindow::on_actionopen_triggered()
     QLabel *label = static_cast<QLabel *>(ui->scrollArea->widget());
     string unmini;
     try {
-        string s = toline(file_path.toStdString(), unmini, xml_txt);
+        string s = toline(this->file_path.toStdString(), unmini, xml_txt);
         root = nullptr;
         int st = 0;
         build_tree(xml_txt, root, st);
@@ -198,14 +198,14 @@ void MainWindow::on_actionredo_triggered()  // on trigerring redo
 
 void MainWindow::on_actioncompress_triggered()
 {
-    if (file_path.isEmpty()) {
+    if (this->file_path.isEmpty()) {
         QMessageBox::warning(this, "Compression", "No file given to compress");
         return;
     }
 
     try {
-        compress(file_path.toStdString());
-        write_file(file_path.replace(QRegExp(".xml"), ".bin").toStdString(), false);
+        compress(this->file_path.toUtf8().constData());
+        write_file(file_path.replace(QRegExp(".xml"), ".bin").toUtf8().constData(), false);
     } catch (const exception &e) {
         QMessageBox::warning(this, "Compression", "Error doing compression");
         return;
@@ -217,15 +217,15 @@ void MainWindow::on_actioncompress_triggered()
 
 void MainWindow::on_actiondecompress_triggered()
 {
-    file_path = QFileDialog::getOpenFileName(this, "Select Compressed File", QDir::homePath(), "binary file (*.bin)");
-    if (file_path.isEmpty()) {
+    this->file_path = QFileDialog::getOpenFileName(this, "Select Compressed File", QDir::homePath(), "binary file (*.bin)");
+    if (this->file_path.isEmpty()) {
         return;
     }
 
     try {
-        decompress(file_path.toStdString());
-        file_path = file_path.replace(QRegExp(".bin"), ".xml");
-        write_file(file_path.toStdString(), true);
+        decompress(this->file_path.toUtf8().constData());
+        this->file_path = this->file_path.replace(QRegExp(".bin"), ".xml");
+        write_file(file_path.toUtf8().constData(), true);
     } catch (const exception &e) {
         QMessageBox::warning(this, "Decompress Error!!", "Can't Open or Decompress File!!");
         return;
